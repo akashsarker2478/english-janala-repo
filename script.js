@@ -1,3 +1,14 @@
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
+}
+
+const createElements = (arr)=>{
+    const htmlElement = arr.map((el) => `<span class= "btn"> ${el} </span>`)
+    return htmlElement.join(" ")
+}
+
 const loadLessons = () => {
     fetch("https://openapi.programming-hero.com/api/levels/all") //promise of response
     .then((res) => res.json()) //promise of json data
@@ -20,6 +31,36 @@ const loadLevelWord = (id) => {
         clickBtn.classList.add("active")//add active class
         displayLevelWords(data.data)
      })
+}
+
+const loadWordDetail = async(id) =>{
+    const url = (`https://openapi.programming-hero.com/api/word/${id}`)
+    const res = await fetch(url)
+    const details = await res.json();
+    displayWordDetails(details.data)
+}
+const displayWordDetails = (word)=> {
+    const detailsBox = document.getElementById("details-container")
+    detailsBox.innerHTML=`
+    <div>
+        <h2 class="text:2xl font-bold"> ${word.word} (<i class="fa-solid fa-microphone-lines"></i>: ${word.pronunciation} )</h2>
+       </div>
+       <div class="mt-3">
+        <h2 class="font-bold">Meaning</h2>
+       <p>${word.meaning}</p>
+      </div>
+      <div class="mt-3">
+        <h2 class="font-bold">Example</h2>
+        <p>${word.sentence}</p>
+      </div>
+      <div class="mt-3">
+        <h2 class="font-bold">Synonym</h2>
+        <div>
+            ${createElements(word.synonyms)}       
+        </div>
+      </div>
+    `
+     document.getElementById("word_modal").showModal()
 }
 
 const displayLevelWords = (words) =>{
@@ -46,8 +87,8 @@ const displayLevelWords = (words) =>{
             <p class="font-semibold">Meaning/Pronounciation</p>
             <div class="text-2xl mt-2 font-medium bangla-font"> ${word.meaning ? word.meaning : "অর্থ পাওয়া যায়নি" } / ${word.pronunciation ? word.pronunciation : "pronunciation পাওয়া যায়নি" } </div>
             <div class="flex justify-between item-center mt-5 ">
-                <button onclick="my_modal_5.showModal()" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
-                <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-volume-high"></i></button>
+                <button onclick="loadWordDetail(${word.id})" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
+                <button onclick="pronounceWord( '${word.word}' )" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
         `
