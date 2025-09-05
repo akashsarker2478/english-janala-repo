@@ -4,11 +4,22 @@ const loadLessons = () => {
     .then((json) => displayLessons(json.data))
 };
 
+const removeActive = ()=>{
+    const lessonButtons = document.querySelectorAll(".lesson-btn")
+    lessonButtons.forEach((btn) => btn.classList.remove("active"))
+}
+
 const loadLevelWord = (id) => {
     const url = `https://openapi.programming-hero.com/api/level/${id}`
      fetch(url)
      .then((res) => res.json())
-     .then(data =>displayLevelWords(data.data))
+     .then(data =>{
+        removeActive() //remove all active class
+        const clickBtn = document.getElementById(`lesson-btn-${id}`)
+        // console.log(clickBtn)
+        clickBtn.classList.add("active")//add active class
+        displayLevelWords(data.data)
+     })
 }
 
 const displayLevelWords = (words) =>{
@@ -35,7 +46,7 @@ const displayLevelWords = (words) =>{
             <p class="font-semibold">Meaning/Pronounciation</p>
             <div class="text-2xl mt-2 font-medium bangla-font"> ${word.meaning ? word.meaning : "অর্থ পাওয়া যায়নি" } / ${word.pronunciation ? word.pronunciation : "pronunciation পাওয়া যায়নি" } </div>
             <div class="flex justify-between item-center mt-5 ">
-                <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
+                <button onclick="my_modal_5.showModal()" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
                 <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
@@ -54,7 +65,7 @@ const displayLessons = (lessons)=>{
         //3.create element
         const btnDiv = document.createElement("div")
         btnDiv.innerHTML = `
-             <button onclick="loadLevelWord(${lesson.level_no})" class="btn btn-soft btn-primary">Lesson - ${lesson.level_no}
+             <button id="lesson-btn-${lesson.level_no}" onclick="loadLevelWord(${lesson.level_no})" class="btn btn-soft btn-primary lesson-btn">Lesson - ${lesson.level_no}
              </button>
         `
         //4.append into container
